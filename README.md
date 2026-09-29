@@ -1,93 +1,112 @@
 # Checkpoint 2 — ExpenseHub
 
-Checkpoint de C# em grupos de até 3 pessoas para construção de uma Application Programming Interface (API) corporativa de reembolsos.
+API corporativa de reembolsos desenvolvida em C# com ASP.NET Core, Identity, Entity Framework Core e SQLite.
 
-O prazo de entrega é **13 de outubro de 2026**. O grupo deverá implementar autenticação, autorização, fluxo de aprovação e reprovação, pagamento simulado, histórico e testes unitários.
+## Implementado
 
-## Criar seu repositório
+- ASP.NET Core Identity persistido em banco relacional;
+- autenticação Bearer pelos endpoints `POST /register` e `POST /login`;
+- roles `Admin`, `Employee`, `Approver`, `Finance` e `Auditor`;
+- seed idempotente das roles e de uma conta Admin inicial;
+- cadastro sem aceitar role do cliente;
+- administração segura de roles;
+- criação e edição de reembolso em `Draft`;
+- fluxo `Draft -> Submitted -> Approved -> Paid`;
+- reprovação `Submitted -> Rejected`;
+- proibição de autoaprovação e autopagamento;
+- filtros de leitura por role, ownership e estado;
+- pagamento simulado e histórico auditável;
+- testes unitários sem banco, rede ou serviços externos.
 
-1. Clique em **Use this template**.
-2. Selecione **Create a new repository**.
-3. Crie um repositório **público** em uma das contas do grupo.
-4. Adicione os demais integrantes como colaboradores.
-5. Clone o repositório.
+## Banco de dados
 
-Não use fork. As issues permanecem neste repositório original como especificação comum da turma.
+Provider: SQLite, pacote `Microsoft.EntityFrameworkCore.Sqlite`.
 
-Os commits serão utilizados para avaliar a participação. Todos os membros do grupo
-devem possuir mais de um commit no repositório.
-
-## Fluxo de trabalho
-
-Para cada issue:
-
-1. leia os critérios no repositório original;
-2. crie uma branch com o identificador, por exemplo `i06-ownership`;
-3. implemente e valide a feature;
-4. abra uma pull request no seu próprio repositório;
-5. use um título como `I06 — Ownership e matriz de acesso`;
-6. adicione na descrição uma referência completa, como `Racass/checkpoint-csharpracass-expensehub#6`;
-7. não use `Closes`, `Fixes` ou `Resolves`, pois a issue original deve permanecer aberta;
-8. conclua a auto-revisão e faça o merge.
-
-## Estrutura inicial
+Configuração padrão:
 
 ```text
-sources/
-├── ExpenseHub.slnx
-├── ExpenseHub.Api/
-└── ExpenseHub.UnitTests/
+Data Source=expensehub.db
 ```
 
-A solução começa sem Identity, banco, domínio ou testes funcionais. Toda implementação avaliada deve ser criada por você.
+A inicialização usa `Database.EnsureCreatedAsync()`, fornecendo um procedimento reproduzível para criar a estrutura local. Arquivos `.db` não são versionados.
 
-## Comandos
+## Admin inicial
 
-```shell
+A senha não é armazenada no repositório. Configure antes da primeira execução:
+
+PowerShell:
+
+```powershell
+$env:ExpenseHub__AdminPassword="SuaSenhaForteAqui123!"
+```
+
+Bash:
+
+```bash
+export ExpenseHub__AdminPassword='SuaSenhaForteAqui123!'
+```
+
+E-mail padrão:
+
+```text
+admin@expensehub.local
+```
+
+O e-mail pode ser alterado com `ExpenseHub__AdminEmail`.
+
+## Executar e validar
+
+Na raiz:
+
+```bash
 dotnet restore ./sources/ExpenseHub.slnx
 dotnet build ./sources/ExpenseHub.slnx
 dotnet test ./sources/ExpenseHub.slnx
 dotnet run --project ./sources/ExpenseHub.Api/ExpenseHub.Api.csproj
 ```
 
-O endpoint inicial `GET /health` existe apenas para confirmar que a aplicação inicia.
+Health check:
 
-## Documentação
+```text
+GET /health
+```
 
-- [Enunciado](docs/ENUNCIADO.md)
-- [Requisitos e contratos](docs/REQUISITOS.md)
-- [Rubrica](docs/RUBRICA.md)
-- [Matriz de autorização](docs/MATRIZ-AUTORIZACAO.md)
-- [Processo no GitHub](docs/PROCESSO-GITHUB.md)
-- [Uso de Inteligência Artificial](docs/USO-DE-IA.md)
-- [Regras do pipeline de qualidade](docs/code-quality-rules.md)
+## Endpoints
 
-## Banco de dados
+| Método | Rota |
+|---|---|
+| POST | `/register` |
+| POST | `/login` |
+| GET | `/api/admin/users` |
+| PUT | `/api/admin/users/{id}/roles` |
+| POST | `/api/expenses` |
+| PUT | `/api/expenses/{id}` |
+| GET | `/api/expenses` |
+| GET | `/api/expenses/{id}` |
+| POST | `/api/expenses/{id}/submit` |
+| POST | `/api/expenses/{id}/approve` |
+| POST | `/api/expenses/{id}/reject` |
+| POST | `/api/expenses/{id}/pay` |
+| GET | `/api/expenses/{id}/history` |
 
-Você pode utilizar Microsoft SQL Server LocalDB, Oracle Database, SQLite ou outro provider relacional compatível com Entity Framework Core.
+## Regras principais
 
-A escolha não gera pontos. Documente no README do seu repositório:
+- descrição: 10 a 500 caracteres;
+- valor: R$ 0,01 a R$ 2.147.483.647,00 usando `decimal`;
+- data da despesa: válida e não futura;
+- justificativa de reprovação: 10 a 500 caracteres;
+- proprietário, estado, atores e horários são definidos pelo servidor;
+- `Rejected` e `Paid` são estados finais;
+- transição incompatível ou repetida retorna `409`;
+- recurso inexistente ou fora do escopo de leitura retorna `404`;
+- `Admin` sozinho não recebe acesso funcional a reembolsos.
 
-- provider e pacote utilizado;
-- configuração necessária;
-- criação ou atualização do banco;
-- como iniciar a aplicação.
-
-Não versione senhas, tokens ou connection strings sensíveis.
+Após alteração de roles, o usuário deve fazer login novamente para obter uma credencial atualizada.
 
 ## Testes
 
-Somente testes unitários escritos por você entram na nota. Testes de integração, end-to-end ou de interface são permitidos, mas opcionais e sem pontuação.
+Os testes em `sources/ExpenseHub.UnitTests` cobrem transições válidas e inválidas, ownership, autoaprovação, autopagamento, validações, visibilidade por perfil e histórico.
 
-Os testes unitários devem executar sem banco, rede ou serviço externo.
+## Qualidade
 
-## Entrega
-
-Entregue:
-
-- URL do repositório público;
-- commit Secure Hash Algorithm (SHA) final;
-- integração contínua executada;
-- documentação atualizada.
-
-O projeto deve compilar sem erros e ser entregue sem warnings para receber a pontuação integral de Qualidade de Código.
+Os arquivos oficiais de `.editorconfig`, `Directory.Build.props`, scripts e workflow `code-quality` foram preservados. Antes da entrega, confirme que o workflow final está verde e registre o SHA final da `main`.

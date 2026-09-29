@@ -27,6 +27,11 @@ artifacts/
 *.dll
 *.exe
 
+# SQLite local database
+*.db
+*.db-shm
+*.db-wal
+
 # Rider
 .idea/
 

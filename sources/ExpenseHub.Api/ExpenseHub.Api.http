@@ -1,9 +1,48 @@
-@ExpenseHub_Api_HostAddress = http://localhost:5245
+@host = http://localhost:5000
+@token = COLE_O_TOKEN_AQUI
+@expenseId = COLE_O_GUID_AQUI
 
-GET {{ExpenseHub_Api_HostAddress}}/health
-Accept: application/json
+### Health
+GET {{host}}/health
 
-###
+### Registrar usuário
+POST {{host}}/register
+Content-Type: application/json
 
-# Os endpoints do checkpoint estão definidos em docs/REQUISITOS.md.
-# Implemente e adicione aqui as requisições usadas para validar cada issue.
+{
+  "email": "employee@example.com",
+  "password": "StrongPassword123!"
+}
+
+### Login
+POST {{host}}/login
+Content-Type: application/json
+
+{
+  "email": "employee@example.com",
+  "password": "StrongPassword123!"
+}
+
+### Criar rascunho
+POST {{host}}/api/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Despesa de deslocamento para cliente",
+  "amount": 125.50,
+  "expenseDate": "2026-09-29",
+  "categoryId": null
+}
+
+### Enviar rascunho
+POST {{host}}/api/expenses/{{expenseId}}/submit
+Authorization: Bearer {{token}}
+
+### Listar conforme perfil
+GET {{host}}/api/expenses
+Authorization: Bearer {{token}}
+
+### Consultar histórico
+GET {{host}}/api/expenses/{{expenseId}}/history
+Authorization: Bearer {{token}}
