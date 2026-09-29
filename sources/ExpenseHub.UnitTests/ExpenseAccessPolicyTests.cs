@@ -6,10 +6,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ExpenseHub.UnitTests;
 
 [TestClass]
-public sealed class ExpenseAccessPolicyTests
+internal sealed class ExpenseAccessPolicyTests
 {
     [TestMethod]
-    public void Employee_CanReadOnlyOwnExpense()
+    internal void Employee_CanReadOnlyOwnExpense()
     {
         Expense ownExpense = CreateExpense("employee-1", ExpenseStatus.Draft);
         Expense otherExpense = CreateExpense("employee-2", ExpenseStatus.Draft);
@@ -20,7 +20,7 @@ public sealed class ExpenseAccessPolicyTests
     }
 
     [TestMethod]
-    public void Approver_CanReadSubmittedExpense()
+    internal void Approver_CanReadSubmittedExpense()
     {
         Expense expense = CreateExpense("employee-1", ExpenseStatus.Submitted);
 
@@ -28,7 +28,7 @@ public sealed class ExpenseAccessPolicyTests
     }
 
     [TestMethod]
-    public void Finance_CanReadOnlyApprovedOrPaidExpense()
+    internal void Finance_CanReadOnlyApprovedOrPaidExpense()
     {
         Expense approved = CreateExpense("employee-1", ExpenseStatus.Approved);
         Expense submitted = CreateExpense("employee-1", ExpenseStatus.Submitted);
@@ -39,7 +39,7 @@ public sealed class ExpenseAccessPolicyTests
     }
 
     [TestMethod]
-    public void Auditor_CanReadEveryState()
+    internal void Auditor_CanReadEveryState()
     {
         Expense expense = CreateExpense("employee-1", ExpenseStatus.Rejected);
 
@@ -47,7 +47,7 @@ public sealed class ExpenseAccessPolicyTests
     }
 
     [TestMethod]
-    public void AdminRoleAlone_DoesNotGrantExpenseReadAccess()
+    internal void AdminRoleAlone_DoesNotGrantExpenseReadAccess()
     {
         Expense expense = CreateExpense("employee-1", ExpenseStatus.Submitted);
 
@@ -55,7 +55,7 @@ public sealed class ExpenseAccessPolicyTests
     }
 
     [TestMethod]
-    public void MultipleRoles_CombineReadPermissions()
+    internal void MultipleRoles_CombineReadPermissions()
     {
         Expense ownDraft = CreateExpense("employee-1", ExpenseStatus.Draft);
         Expense submitted = CreateExpense("employee-2", ExpenseStatus.Submitted);

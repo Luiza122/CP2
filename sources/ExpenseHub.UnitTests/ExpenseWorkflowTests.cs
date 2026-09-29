@@ -6,12 +6,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ExpenseHub.UnitTests;
 
 [TestClass]
-public sealed class ExpenseWorkflowTests
+internal sealed class ExpenseWorkflowTests
 {
     private static readonly DateTimeOffset _now = new(2026, 9, 29, 20, 0, 0, TimeSpan.Zero);
 
     [TestMethod]
-    public void Create_StartsAsDraftWithAuthenticatedOwner()
+    internal void Create_StartsAsDraftWithAuthenticatedOwner()
     {
         Expense expense = CreateDraft("employee-1");
 
@@ -21,7 +21,7 @@ public sealed class ExpenseWorkflowTests
     }
 
     [TestMethod]
-    public void Submit_ChangesDraftToSubmitted()
+    internal void Submit_ChangesDraftToSubmitted()
     {
         Expense expense = CreateDraft("employee-1");
 
@@ -31,7 +31,7 @@ public sealed class ExpenseWorkflowTests
     }
 
     [TestMethod]
-    public void Submit_ByDifferentOwner_IsForbidden()
+    internal void Submit_ByDifferentOwner_IsForbidden()
     {
         Expense expense = CreateDraft("employee-1");
 
@@ -40,7 +40,7 @@ public sealed class ExpenseWorkflowTests
     }
 
     [TestMethod]
-    public void Approve_ByOwner_IsForbidden()
+    internal void Approve_ByOwner_IsForbidden()
     {
         Expense expense = CreateSubmitted("employee-1");
 
@@ -49,7 +49,7 @@ public sealed class ExpenseWorkflowTests
     }
 
     [TestMethod]
-    public void Approve_ChangesSubmittedToApproved()
+    internal void Approve_ChangesSubmittedToApproved()
     {
         Expense expense = CreateSubmitted("employee-1");
 
@@ -59,7 +59,7 @@ public sealed class ExpenseWorkflowTests
     }
 
     [TestMethod]
-    public void Reject_RequiresValidJustification()
+    internal void Reject_RequiresValidJustification()
     {
         Expense expense = CreateSubmitted("employee-1");
 
@@ -68,7 +68,7 @@ public sealed class ExpenseWorkflowTests
     }
 
     [TestMethod]
-    public void Reject_IsFinalAndCannotBeApprovedLater()
+    internal void Reject_IsFinalAndCannotBeApprovedLater()
     {
         Expense expense = CreateSubmitted("employee-1");
         expense.Reject("approver-1", "Expense policy was not satisfied.", _now.AddMinutes(2));
@@ -78,7 +78,7 @@ public sealed class ExpenseWorkflowTests
     }
 
     [TestMethod]
-    public void Pay_ByOwner_IsForbidden()
+    internal void Pay_ByOwner_IsForbidden()
     {
         Expense expense = CreateApproved("employee-1");
 
@@ -87,7 +87,7 @@ public sealed class ExpenseWorkflowTests
     }
 
     [TestMethod]
-    public void Pay_ChangesApprovedToPaidAndCannotRepeat()
+    internal void Pay_ChangesApprovedToPaidAndCannotRepeat()
     {
         Expense expense = CreateApproved("employee-1");
         expense.Pay("finance-1", _now.AddMinutes(3));
@@ -97,7 +97,7 @@ public sealed class ExpenseWorkflowTests
     }
 
     [TestMethod]
-    public void Edit_IsAllowedOnlyWhileDraftAndByOwner()
+    internal void Edit_IsAllowedOnlyWhileDraftAndByOwner()
     {
         Expense expense = CreateDraft("employee-1");
         string changes = expense.Edit(

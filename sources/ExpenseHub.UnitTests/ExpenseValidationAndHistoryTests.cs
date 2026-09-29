@@ -6,12 +6,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ExpenseHub.UnitTests;
 
 [TestClass]
-public sealed class ExpenseValidationAndHistoryTests
+internal sealed class ExpenseValidationAndHistoryTests
 {
     private static readonly DateTimeOffset _now = new(2026, 9, 29, 20, 0, 0, TimeSpan.Zero);
 
     [TestMethod]
-    public void AmountBelowMinimum_IsRejected()
+    internal void AmountBelowMinimum_IsRejected()
     {
         Assert.ThrowsExactly<ValidationException>(() => ExpenseRules.ValidateFields(
             "Valid expense description",
@@ -21,7 +21,7 @@ public sealed class ExpenseValidationAndHistoryTests
     }
 
     [TestMethod]
-    public void AmountAboveMaximum_IsRejected()
+    internal void AmountAboveMaximum_IsRejected()
     {
         Assert.ThrowsExactly<ValidationException>(() => ExpenseRules.ValidateFields(
             "Valid expense description",
@@ -31,7 +31,7 @@ public sealed class ExpenseValidationAndHistoryTests
     }
 
     [TestMethod]
-    public void FutureExpenseDate_IsRejected()
+    internal void FutureExpenseDate_IsRejected()
     {
         Assert.ThrowsExactly<ValidationException>(() => ExpenseRules.ValidateFields(
             "Valid expense description",
@@ -41,7 +41,7 @@ public sealed class ExpenseValidationAndHistoryTests
     }
 
     [TestMethod]
-    public void DescriptionOutsideAllowedLength_IsRejected()
+    internal void DescriptionOutsideAllowedLength_IsRejected()
     {
         Assert.ThrowsExactly<ValidationException>(() => ExpenseRules.ValidateFields(
             "short",
@@ -51,7 +51,7 @@ public sealed class ExpenseValidationAndHistoryTests
     }
 
     [TestMethod]
-    public void History_StoresActorUtcStateAndJustification()
+    internal void History_StoresActorUtcStateAndJustification()
     {
         Expense expense = Expense.Create(
             "employee-1",
