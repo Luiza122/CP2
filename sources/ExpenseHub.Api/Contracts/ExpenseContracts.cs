@@ -4,23 +4,23 @@ using ExpenseHub.Api.Domain;
 
 namespace ExpenseHub.Api.Contracts;
 
-public sealed record CreateExpenseRequest(
+internal sealed record CreateExpenseRequest(
     string? Description,
     decimal Amount,
     DateOnly ExpenseDate,
     Guid? CategoryId);
 
-public sealed record UpdateExpenseRequest(
+internal sealed record UpdateExpenseRequest(
     string? Description,
     decimal Amount,
     DateOnly ExpenseDate,
     Guid? CategoryId);
 
-public sealed record RejectExpenseRequest(string? Justification);
+internal sealed record RejectExpenseRequest(string? Justification);
 
-public sealed record UpdateRolesRequest(IReadOnlyCollection<string>? Roles);
+internal sealed record UpdateRolesRequest(IReadOnlyCollection<string>? Roles);
 
-public sealed record ExpenseResponse(
+internal sealed record ExpenseResponse(
     Guid Id,
     string OwnerId,
     string Description,
@@ -31,7 +31,7 @@ public sealed record ExpenseResponse(
     DateTimeOffset CreatedAtUtc,
     DateTimeOffset UpdatedAtUtc);
 
-public sealed record ExpenseHistoryResponse(
+internal sealed record ExpenseHistoryResponse(
     Guid Id,
     string Action,
     string ActorUserId,
@@ -41,4 +41,4 @@ public sealed record ExpenseHistoryResponse(
     string? Justification,
     string? Changes);
 
-public sealed record UserResponse(string Id, string Email, IReadOnlyCollection<string> Roles);
+internal sealed record UserResponse(string Id, string Email, IReadOnlyCollection<string> Roles);

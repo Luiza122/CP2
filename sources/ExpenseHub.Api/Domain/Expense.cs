@@ -4,7 +4,7 @@ using ExpenseHub.Api.Infrastructure;
 
 namespace ExpenseHub.Api.Domain;
 
-public sealed class Expense
+internal sealed class Expense
 {
     public Guid Id { get; set; }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ExpenseHub.Api.Domain;
 
-public sealed class ExpenseCategory
+internal sealed class ExpenseCategory
 {
     public Guid Id { get; set; }
 

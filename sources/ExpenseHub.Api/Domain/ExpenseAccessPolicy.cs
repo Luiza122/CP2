@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ExpenseHub.Api.Domain;
 
-public static class ExpenseAccessPolicy
+internal static class ExpenseAccessPolicy
 {
     public static bool HasRole(IReadOnlyCollection<string> roles, string role)
     {

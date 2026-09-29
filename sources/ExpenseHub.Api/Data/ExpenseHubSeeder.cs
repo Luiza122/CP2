@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ExpenseHub.Api.Data;
 
-public static class ExpenseHubSeeder
+internal static class ExpenseHubSeeder
 {
     public static async Task SeedAsync(IServiceProvider services, IConfiguration configuration)
     {

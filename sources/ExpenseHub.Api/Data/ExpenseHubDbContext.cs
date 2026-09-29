@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseHub.Api.Data;
 
-public sealed class ExpenseHubDbContext : IdentityDbContext<ApplicationUser>
+internal sealed class ExpenseHubDbContext : IdentityDbContext<ApplicationUser>
 {
     public ExpenseHubDbContext(DbContextOptions<ExpenseHubDbContext> options)
         : base(options)
