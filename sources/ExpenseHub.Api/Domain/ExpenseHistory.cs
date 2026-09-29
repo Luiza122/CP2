@@ -2,7 +2,7 @@ using System;
 
 namespace ExpenseHub.Api.Domain;
 
-public sealed class ExpenseHistory
+internal sealed class ExpenseHistory
 {
     public Guid Id { get; set; }
 

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseHub.Api.Infrastructure;
 
-public sealed class ExpenseHubExceptionHandler : IExceptionHandler
+internal sealed class ExpenseHubExceptionHandler : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,

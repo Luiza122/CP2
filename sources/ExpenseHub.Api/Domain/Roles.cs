@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ExpenseHub.Api.Domain;
 
-public static class Roles
+internal static class Roles
 {
     public const string Admin = "Admin";
     public const string Employee = "Employee";

@@ -2,7 +2,7 @@ using System;
 
 namespace ExpenseHub.Api.Infrastructure;
 
-public abstract class ExpenseHubException : Exception
+internal abstract class ExpenseHubException : Exception
 {
     protected ExpenseHubException(int statusCode, string title, string message)
         : base(message)
@@ -16,7 +16,7 @@ public abstract class ExpenseHubException : Exception
     public string Title { get; }
 }
 
-public sealed class ValidationException : ExpenseHubException
+internal sealed class ValidationException : ExpenseHubException
 {
     public ValidationException(string message)
         : base(400, "Validation error", message)
@@ -24,7 +24,7 @@ public sealed class ValidationException : ExpenseHubException
     }
 }
 
-public sealed class ForbiddenException : ExpenseHubException
+internal sealed class ForbiddenException : ExpenseHubException
 {
     public ForbiddenException(string message)
         : base(403, "Forbidden", message)
@@ -32,7 +32,7 @@ public sealed class ForbiddenException : ExpenseHubException
     }
 }
 
-public sealed class NotFoundException : ExpenseHubException
+internal sealed class NotFoundException : ExpenseHubException
 {
     public NotFoundException(string message)
         : base(404, "Not found", message)
@@ -40,7 +40,7 @@ public sealed class NotFoundException : ExpenseHubException
     }
 }
 
-public sealed class ConflictException : ExpenseHubException
+internal sealed class ConflictException : ExpenseHubException
 {
     public ConflictException(string message)
         : base(409, "Conflict", message)

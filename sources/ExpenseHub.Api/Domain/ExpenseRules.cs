@@ -3,7 +3,7 @@ using ExpenseHub.Api.Infrastructure;
 
 namespace ExpenseHub.Api.Domain;
 
-public static class ExpenseRules
+internal static class ExpenseRules
 {
     public const int MinimumTextLength = 10;
     public const int MaximumTextLength = 500;

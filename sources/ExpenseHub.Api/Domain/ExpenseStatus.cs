@@ -1,6 +1,6 @@
 namespace ExpenseHub.Api.Domain;
 
-public enum ExpenseStatus
+internal enum ExpenseStatus
 {
     Draft = 0,
     Submitted = 1,

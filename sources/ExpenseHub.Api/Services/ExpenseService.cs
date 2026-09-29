@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseHub.Api.Services;
 
-public sealed class ExpenseService
+internal sealed class ExpenseService
 {
     private readonly ExpenseHubDbContext _dbContext;
     private readonly TimeProvider _timeProvider;
