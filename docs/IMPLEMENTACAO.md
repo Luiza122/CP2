@@ -1,11 +1,28 @@
 # Mapeamento da implementação
 
-## I01 — Fundação e EF Core
+## I01 — Fundação e Entity Framework Core
 
-- `sources/ExpenseHub.Api/Data/ExpenseHubDbContext.cs`
-- SQLite e Entity Framework Core;
-- entidades `Expense`, `ExpenseCategory`, `ExpenseHistory` e `PaymentRecord`;
-- criação reproduzível do banco com `EnsureCreatedAsync`.
+- Solução: `sources/ExpenseHub.slnx`, com API e projeto de testes separados.
+- Provider relacional: SQLite, pelo pacote `Microsoft.EntityFrameworkCore.Sqlite`.
+- Contexto e Identity: `sources/ExpenseHub.Api/Data/ExpenseHubDbContext.cs`.
+- Entidades persistidas: usuários/roles do Identity, `Expense`, `ExpenseCategory`, `ExpenseHistory` e `PaymentRecord`.
+- Relacionamentos, chaves, campos obrigatórios, limites de tamanho, precisão monetária e exclusões estão configurados em `OnModelCreating`.
+- O banco local é inicializado por `Database.EnsureCreatedAsync()` durante a inicialização. Esse mecanismo cria a estrutura a partir do modelo atual; não há migrations versionadas neste projeto.
+- String de conexão padrão: `Data Source=expensehub.db`. Pode ser substituída pela configuração `ConnectionStrings:ExpenseHub` (variável de ambiente `ConnectionStrings__ExpenseHub`).
+- O arquivo do banco é local e deve permanecer fora do Git.
+
+### Configurar e executar
+
+Na raiz do repositório:
+
+```bash
+dotnet restore ./sources/ExpenseHub.slnx
+dotnet build ./sources/ExpenseHub.slnx
+dotnet test ./sources/ExpenseHub.slnx
+dotnet run --project ./sources/ExpenseHub.Api/ExpenseHub.Api.csproj
+```
+
+Para criar o banco local, basta iniciar a API. O banco é criado em tempo de execução; não é necessário manter um servidor externo ligado para restaurar, compilar ou executar os testes unitários. Os testes de domínio não abrem conexão com o banco.
 
 ## I02 — Identity, Admin e autenticação
 
@@ -34,7 +51,7 @@
 - `ExpenseAccessPolicyTests.cs`;
 - `ExpenseValidationAndHistoryTests.cs`.
 
-Os testes são unitários e não dependem de banco ou rede.
+Os testes unitários são executados sem banco, rede ou serviços externos.
 
 ## I10 — Qualidade
 
