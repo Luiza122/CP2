@@ -23,9 +23,11 @@
 
 ## I04–I08 — Fluxo corporativo
 
-- regras de estado em `Domain/Expense.cs`;
-- validações em `Domain/ExpenseRules.cs`;
-- autorização contextual e filtros em `Services/ExpenseService.cs`;
+- `POST /api/expenses` exige role Employee e usa o identificador da identidade autenticada como proprietário;
+- `PUT /api/expenses/{id}` delega a verificação de proprietário e do estado Draft ao domínio;
+- DTOs separados de criação e atualização não expõem proprietário, estado, ator ou timestamps;
+- regras de estado em `Domain/Expense.cs` e validações em `Domain/ExpenseRules.cs`;
+- `ExpenseDraftOwnershipTests.cs` cobre criação como Draft, edição pelo dono, bloqueio de outro funcionário e edição inválida após envio;
 - pagamento e histórico persistidos junto com a alteração correspondente.
 
 ## I09 — Testes
