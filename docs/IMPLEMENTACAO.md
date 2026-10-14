@@ -1,41 +1,40 @@
 # Mapeamento da implementação
 
-## I01 — Fundação e EF Core
+## I01 — Fundação e Entity Framework Core
 
-- `sources/ExpenseHub.Api/Data/ExpenseHubDbContext.cs`
-- SQLite e Entity Framework Core;
-- entidades `Expense`, `ExpenseCategory`, `ExpenseHistory` e `PaymentRecord`;
-- criação reproduzível do banco com `EnsureCreatedAsync`.
+- SQLite como banco relacional, com Entity Framework Core em `Data/ExpenseHubDbContext.cs`.
+- Identity, despesas, categorias, histórico e pagamentos persistidos no mesmo contexto.
+- Chaves, relacionamentos, obrigatoriedade, limites de tamanho, precisão monetária e unicidade do pagamento configurados no modelo.
+- Inicialização reproduzível com `EnsureCreatedAsync()`; a solução atual não possui migrations versionadas.
+- String de conexão padrão `Data Source=expensehub.db`, configurável por `ConnectionStrings__ExpenseHub`.
+- `ExpenseHubDbContextModelTests.cs` valida os mapeamentos sem precisar iniciar a API.
 
 ## I02 — Identity, Admin e autenticação
 
-- ASP.NET Core Identity persistido;
-- autenticação Bearer com `AddIdentityApiEndpoints` e `MapIdentityApi`;
-- roles obrigatórias;
-- seed idempotente e senha inicial fora do código-fonte.
+- ASP.NET Core Identity com persistência relacional e autenticação Bearer por `AddIdentityApiEndpoints` e `MapIdentityApi`.
+- Roles `Admin`, `Employee`, `Approver`, `Finance` e `Auditor`.
+- Seed idempotente: cria as roles e a conta Admin apenas quando necessário.
+- A senha inicial vem de `ExpenseHub__AdminPassword`; não deve ser armazenada no repositório.
+- `IdentitySeedTests.cs` verifica senha configurada, roles obrigatórias e execução repetida sem duplicações.
 
-## I03 — Cadastro e roles
+## I03 — Cadastro e gerenciamento de roles
 
-- `/register` não recebe role;
-- endpoints Admin em `Program.cs`;
-- somente roles conhecidas são aceitas;
-- Admin não remove a própria role Admin.
+- O cadastro padrão do Identity não recebe role enviada pelo cliente.
+- `GET /api/admin/users` e `PUT /api/admin/users/{id}/roles` exigem a role Admin.
+- `RoleManagementRules` restringe alterações às roles conhecidas e impede Admin de remover sua própria role.
+- `RoleManagementRulesTests.cs` cobre roles válidas/desconhecidas, entrada nula e tentativa de auto-remoção da role Admin.
 
-## I04–I08 — Fluxo corporativo
+## I04–I08 — Fluxo de reembolso
 
-- regras de estado em `Domain/Expense.cs`;
-- validações em `Domain/ExpenseRules.cs`;
-- autorização contextual e filtros em `Services/ExpenseService.cs`;
-- pagamento e histórico persistidos junto com a alteração correspondente.
+- Regras de estado em `Domain/Expense.cs` e validações em `Domain/ExpenseRules.cs`.
+- Ownership, roles e visibilidade contextual na camada de serviço.
+- Histórico registra ator, horário, estado anterior/novo e justificativa quando aplicável.
+- Pagamento simulado é persistido com `PaymentRecord` e evento de histórico.
 
 ## I09 — Testes
 
-- `ExpenseWorkflowTests.cs`;
-- `ExpenseAccessPolicyTests.cs`;
-- `ExpenseValidationAndHistoryTests.cs`.
-
-Os testes são unitários e não dependem de banco ou rede.
+Os testes da solução cobrem regras de domínio, mapeamento do EF Core, identidade/seed e regras de autorização. Os testes que usam SQLite em memória não dependem de banco externo ou serviços remotos.
 
 ## I10 — Qualidade
 
-O workflow, os analisadores, o `.editorconfig`, o `Directory.Build.props` e os scripts oficiais do template foram mantidos sem redução de severidade ou remoção de etapas.
+Workflow, analisadores, `.editorconfig`, `Directory.Build.props` e scripts oficiais do template são mantidos. Antes da entrega, confirmar o resultado final do GitHub Actions e registrar o SHA final da branch principal.
