@@ -104,12 +104,12 @@ internal static class Program
                 return Results.BadRequest(new { error = "Roles are required." });
             }
 
-            HashSet<string> requestedRoles = new(request.Roles, StringComparer.Ordinal);
-
-            if (requestedRoles.Any(role => !Roles.All.Contains(role, StringComparer.Ordinal)))
+            if (!RoleManagementRules.ContainsOnlyKnownRoles(request.Roles))
             {
                 return Results.BadRequest(new { error = "One or more roles are invalid." });
             }
+
+            HashSet<string> requestedRoles = new(request.Roles, StringComparer.Ordinal);
 
             ApplicationUser? targetUser = await userManager.FindByIdAsync(id);
 
@@ -120,8 +120,7 @@ internal static class Program
 
             string currentUserId = GetUserId(principal);
 
-            if (string.Equals(currentUserId, targetUser.Id, StringComparison.Ordinal)
-                && !requestedRoles.Contains(Roles.Admin))
+            if (!RoleManagementRules.CanPreserveOwnAdminRole(currentUserId, targetUser.Id, requestedRoles))
             {
                 return Results.BadRequest(new { error = "An Admin cannot remove their own Admin role." });
             }
