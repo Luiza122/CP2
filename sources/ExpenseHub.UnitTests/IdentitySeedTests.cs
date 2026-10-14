@@ -58,9 +58,7 @@ internal sealed class IdentitySeedTests
 
         ExpenseHubDbContext dbContext = scope.ServiceProvider.GetRequiredService<ExpenseHubDbContext>();
         UserManager<ApplicationUser> users = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        List<ApplicationUser> adminUsers = await users.GetUsersInRoleAsync(Roles.Admin) is var admins
-            ? admins.ToList()
-            : new List<ApplicationUser>();
+        IList<ApplicationUser> adminUsers = await users.GetUsersInRoleAsync(Roles.Admin);
         int roleCount = await dbContext.Roles.CountAsync();
 
         Assert.AreEqual(1, adminUsers.Count);
@@ -71,7 +69,7 @@ internal sealed class IdentitySeedTests
     private static ServiceProvider CreateProvider(SqliteConnection connection)
     {
         ServiceCollection services = new();
-        services.AddLogging(configure => configure.AddDebug());
+        services.AddLogging();
         services.AddDbContext<ExpenseHubDbContext>(options => options.UseSqlite(connection));
         services.AddIdentityApiEndpoints<ApplicationUser>()
             .AddRoles<IdentityRole>()
