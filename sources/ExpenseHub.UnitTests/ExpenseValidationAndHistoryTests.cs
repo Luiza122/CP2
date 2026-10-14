@@ -51,6 +51,29 @@ internal sealed class ExpenseValidationAndHistoryTests
     }
 
     [TestMethod]
+    internal void Reject_ByOwner_IsForbiddenAndKeepsSubmittedState()
+    {
+        Expense expense = CreateSubmittedExpense();
+
+        Assert.ThrowsExactly<ForbiddenException>(() => expense.Reject(
+            "employee-1",
+            "Valid rejection justification.",
+            _now.AddMinutes(2)));
+
+        Assert.AreEqual(ExpenseStatus.Submitted, expense.Status);
+    }
+
+    [TestMethod]
+    internal void Reject_WithMinimumLengthJustification_IsAccepted()
+    {
+        Expense expense = CreateSubmittedExpense();
+
+        expense.Reject("approver-1", "1234567890", _now.AddMinutes(2));
+
+        Assert.AreEqual(ExpenseStatus.Rejected, expense.Status);
+    }
+
+    [TestMethod]
     internal void History_StoresActorUtcStateAndJustification()
     {
         Expense expense = Expense.Create(
@@ -77,5 +100,19 @@ internal sealed class ExpenseValidationAndHistoryTests
         Assert.AreEqual(ExpenseStatus.Rejected, history.NewStatus);
         Assert.AreEqual("Expense policy was not satisfied.", history.Justification);
         Assert.AreEqual(TimeSpan.Zero, history.OccurredAtUtc.Offset);
+    }
+
+    private static Expense CreateSubmittedExpense()
+    {
+        Expense expense = Expense.Create(
+            "employee-1",
+            "Valid business expense",
+            100m,
+            new DateOnly(2026, 9, 28),
+            null,
+            _now);
+
+        expense.Submit("employee-1", _now.AddMinutes(1));
+        return expense;
     }
 }
