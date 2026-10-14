@@ -1,3 +1,4 @@
+using System.Linq;
 using ExpenseHub.Api.Data;
 using ExpenseHub.Api.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,7 @@ internal sealed class ExpenseHubDbContextModelTests
             context.Model.FindEntityType(typeof(Expense));
 
         Assert.IsNotNull(entity);
-        Assert.AreEqual(500, entity.FindProperty(nameof(Expense.Description))?.GetMaxLength());
+        Assert.AreEqual(500, entity!.FindProperty(nameof(Expense.Description))?.GetMaxLength());
         Assert.AreEqual(18, entity.FindProperty(nameof(Expense.Amount))?.GetPrecision());
         Assert.AreEqual(2, entity.FindProperty(nameof(Expense.Amount))?.GetScale());
         Assert.IsTrue(entity.FindProperty(nameof(Expense.OwnerId))?.IsNullable == false);
@@ -41,7 +42,7 @@ internal sealed class ExpenseHubDbContextModelTests
             context.Model.FindEntityType(typeof(PaymentRecord));
 
         Assert.IsNotNull(entity);
-        Assert.IsTrue(entity.GetIndexes().Any(index =>
+        Assert.IsTrue(entity!.GetIndexes().Any(index =>
             index.IsUnique && index.Properties.Any(property => property.Name == nameof(PaymentRecord.ExpenseId))));
     }
 
