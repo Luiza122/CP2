@@ -77,6 +77,40 @@ internal sealed class ExpenseInvalidTransitionTests
         Assert.AreEqual(ExpenseStatus.Draft, expense.Status);
     }
 
+    [TestMethod]
+    internal void RejectedExpense_CannotBeApprovedOrPaid()
+    {
+        Expense expense = CreateSubmitted();
+        expense.Reject(
+            "approver-1",
+            "Valid rejection justification.",
+            _now.AddMinutes(2));
+
+        Assert.ThrowsExactly<ConflictException>(() => expense.Approve(
+            "approver-2",
+            _now.AddMinutes(3)));
+        Assert.ThrowsExactly<ConflictException>(() => expense.Pay(
+            "finance-1",
+            _now.AddMinutes(3)));
+        Assert.AreEqual(ExpenseStatus.Rejected, expense.Status);
+    }
+
+    [TestMethod]
+    internal void PaidExpense_CannotBePaidAgainOrRejected()
+    {
+        Expense expense = CreateApproved();
+        expense.Pay("finance-1", _now.AddMinutes(3));
+
+        Assert.ThrowsExactly<ConflictException>(() => expense.Pay(
+            "finance-2",
+            _now.AddMinutes(4)));
+        Assert.ThrowsExactly<ConflictException>(() => expense.Reject(
+            "approver-2",
+            "Valid rejection justification.",
+            _now.AddMinutes(4)));
+        Assert.AreEqual(ExpenseStatus.Paid, expense.Status);
+    }
+
     private static Expense CreateDraft()
     {
         return Expense.Create(
@@ -92,6 +126,13 @@ internal sealed class ExpenseInvalidTransitionTests
     {
         Expense expense = CreateDraft();
         expense.Submit("employee-1", _now.AddMinutes(1));
+        return expense;
+    }
+
+    private static Expense CreateApproved()
+    {
+        Expense expense = CreateSubmitted();
+        expense.Approve("approver-1", _now.AddMinutes(2));
         return expense;
     }
 }
