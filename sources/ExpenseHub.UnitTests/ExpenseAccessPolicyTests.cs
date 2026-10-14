@@ -20,30 +20,41 @@ internal sealed class ExpenseAccessPolicyTests
     }
 
     [TestMethod]
-    internal void Approver_CanReadSubmittedExpense()
+    internal void Approver_CanReadSubmittedExpenseButNotApprovedExpense()
     {
-        Expense expense = CreateExpense("employee-1", ExpenseStatus.Submitted);
+        Expense submitted = CreateExpense("employee-1", ExpenseStatus.Submitted);
+        Expense approved = CreateExpense("employee-1", ExpenseStatus.Approved);
+        IReadOnlyCollection<string> roles = [Roles.Approver];
 
-        Assert.IsTrue(ExpenseAccessPolicy.CanRead(expense, "approver-1", [Roles.Approver]));
+        Assert.IsTrue(ExpenseAccessPolicy.CanRead(submitted, "approver-1", roles));
+        Assert.IsFalse(ExpenseAccessPolicy.CanRead(approved, "approver-1", roles));
     }
 
     [TestMethod]
     internal void Finance_CanReadOnlyApprovedOrPaidExpense()
     {
         Expense approved = CreateExpense("employee-1", ExpenseStatus.Approved);
+        Expense paid = CreateExpense("employee-1", ExpenseStatus.Paid);
         Expense submitted = CreateExpense("employee-1", ExpenseStatus.Submitted);
+        Expense rejected = CreateExpense("employee-1", ExpenseStatus.Rejected);
         IReadOnlyCollection<string> roles = [Roles.Finance];
 
         Assert.IsTrue(ExpenseAccessPolicy.CanRead(approved, "finance-1", roles));
+        Assert.IsTrue(ExpenseAccessPolicy.CanRead(paid, "finance-1", roles));
         Assert.IsFalse(ExpenseAccessPolicy.CanRead(submitted, "finance-1", roles));
+        Assert.IsFalse(ExpenseAccessPolicy.CanRead(rejected, "finance-1", roles));
     }
 
     [TestMethod]
     internal void Auditor_CanReadEveryState()
     {
-        Expense expense = CreateExpense("employee-1", ExpenseStatus.Rejected);
+        IReadOnlyCollection<string> roles = [Roles.Auditor];
 
-        Assert.IsTrue(ExpenseAccessPolicy.CanRead(expense, "auditor-1", [Roles.Auditor]));
+        foreach (ExpenseStatus status in Enum.GetValues<ExpenseStatus>())
+        {
+            Expense expense = CreateExpense("employee-1", status);
+            Assert.IsTrue(ExpenseAccessPolicy.CanRead(expense, "auditor-1", roles));
+        }
     }
 
     [TestMethod]
