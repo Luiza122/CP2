@@ -14,31 +14,43 @@ internal sealed class ExpenseValidationBoundaryTests
     [TestMethod]
     internal void MinimumAmount_IsAccepted()
     {
-        ExpenseRules.ValidateFields("Valid expense description", 0.01m, _today, _now);
+        Expense expense = CreateDraft("Valid expense description", 0.01m, _today);
+
+        Assert.AreEqual(0.01m, expense.Amount);
+        Assert.AreEqual(ExpenseStatus.Draft, expense.Status);
     }
 
     [TestMethod]
     internal void MaximumAmount_IsAccepted()
     {
-        ExpenseRules.ValidateFields("Valid expense description", int.MaxValue, _today, _now);
+        Expense expense = CreateDraft("Valid expense description", int.MaxValue, _today);
+
+        Assert.AreEqual((decimal)int.MaxValue, expense.Amount);
     }
 
     [TestMethod]
     internal void MinimumDescriptionLength_IsAccepted()
     {
-        ExpenseRules.ValidateFields("1234567890", 10m, _today, _now);
+        Expense expense = CreateDraft("1234567890", 10m, _today);
+
+        Assert.AreEqual("1234567890", expense.Description);
     }
 
     [TestMethod]
     internal void MaximumDescriptionLength_IsAccepted()
     {
-        ExpenseRules.ValidateFields(new string('a', ExpenseRules.MaximumTextLength), 10m, _today, _now);
+        string description = new('a', ExpenseRules.MaximumTextLength);
+        Expense expense = CreateDraft(description, 10m, _today);
+
+        Assert.AreEqual(ExpenseRules.MaximumTextLength, expense.Description.Length);
     }
 
     [TestMethod]
     internal void TodayExpenseDate_IsAccepted()
     {
-        ExpenseRules.ValidateFields("Valid expense description", 10m, _today, _now);
+        Expense expense = CreateDraft("Valid expense description", 10m, _today);
+
+        Assert.AreEqual(_today, expense.ExpenseDate);
     }
 
     [TestMethod]
@@ -50,12 +62,31 @@ internal sealed class ExpenseValidationBoundaryTests
     [TestMethod]
     internal void JustificationAtMaximumLength_IsAccepted()
     {
-        ExpenseRules.ValidateJustification(new string('a', ExpenseRules.MaximumTextLength));
+        Expense expense = CreateDraft("Valid expense description", 10m, _today);
+        expense.Submit("employee-1", _now.AddMinutes(1));
+
+        expense.Reject(
+            "approver-1",
+            new string('a', ExpenseRules.MaximumTextLength),
+            _now.AddMinutes(2));
+
+        Assert.AreEqual(ExpenseStatus.Rejected, expense.Status);
     }
 
     [TestMethod]
     internal void WhitespaceOnlyJustification_IsRejected()
     {
         Assert.ThrowsExactly<ValidationException>(() => ExpenseRules.ValidateJustification("          "));
+    }
+
+    private static Expense CreateDraft(string description, decimal amount, DateOnly expenseDate)
+    {
+        return Expense.Create(
+            "employee-1",
+            description,
+            amount,
+            expenseDate,
+            null,
+            _now);
     }
 }
