@@ -105,7 +105,7 @@ Após alteração de roles, o usuário deve fazer login novamente para obter uma
 
 ## Testes
 
-Os testes em `sources/ExpenseHub.UnitTests` cobrem transições válidas e inválidas, ownership, autoaprovação, autopagamento, validações, visibilidade por perfil e histórico.
+Os testes em `sources/ExpenseHub.UnitTests` cobrem transições válidas e inválidas, ownership, autoaprovação, autopagamento, validações, visibilidade por perfil e histórico. Também verificam limites aceitos de valor, tamanho de descrição, data de hoje e tamanho da justificativa, além de rejeitar justificativa em branco e tentativa de reprovação pelo proprietário.
 
 ## Qualidade
 
