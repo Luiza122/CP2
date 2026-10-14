@@ -17,9 +17,9 @@
 ## I03 — Cadastro e roles
 
 - `/register` não recebe role;
-- endpoints Admin em `Program.cs`;
-- somente roles conhecidas são aceitas;
-- Admin não remove a própria role Admin.
+- endpoints Admin em `Program.cs`, protegidos por `RequireRole(Roles.Admin)`;
+- `RoleManagementRules` centraliza a validação de roles permitidas e a proteção contra remoção da própria role Admin;
+- `RoleManagementRulesTests.cs` cobre roles conhecidas e desconhecidas, entrada nula, tentativa de auto-remover Admin e alterações em outro usuário.
 
 ## I04–I08 — Fluxo corporativo
 
